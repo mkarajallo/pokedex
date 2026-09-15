@@ -22,7 +22,6 @@ export default defineConfig({
 					label: 'Recursos',
 					items: [
 						{ label: 'Glosario', slug: 'recursos/glosario' },
-						{ label: 'Bitácora', slug: 'recursos/bitacora' },
 						{ label: 'Enunciado del TP', slug: 'recursos/enunciado' },
 					],
 				},
