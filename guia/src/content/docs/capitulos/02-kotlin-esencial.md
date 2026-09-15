@@ -639,5 +639,5 @@ fun main() {
 - [ ] Sé que `listOf` crea listas de solo lectura y `mutableListOf` editables.
 - [ ] Puedo usar `if` y `when` como expresiones que devuelven un valor.
 
-**Anterior**: [01 — El entorno](/capitulos/01-entorno/) · **Siguiente**: 03 — Primera pantalla con Compose *(próximamente)*
+**Anterior**: [01 — El entorno](/pokedex/capitulos/01-entorno/) · **Siguiente**: 03 — Primera pantalla con Compose *(próximamente)*
 

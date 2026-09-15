@@ -165,4 +165,4 @@ del capítulo.
 - [ ] Sé qué es el SDK, qué es Gradle y qué hace el Gradle sync.
 - [ ] La app de plantilla corre en el emulador o en un teléfono físico.
 
-**Anterior**: [00 — Introducción](/capitulos/00-introduccion/) · **Siguiente**: 02 — Kotlin esencial *(próximamente)*
+**Anterior**: [00 — Introducción](/pokedex/capitulos/00-introduccion/) · **Siguiente**: 02 — Kotlin esencial *(próximamente)*

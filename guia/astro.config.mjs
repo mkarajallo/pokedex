@@ -4,6 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://mkarajallo.github.io',
+	base: '/pokedex',
 	integrations: [
 		starlight({
 			title: 'Pokédex — Android desde cero',

@@ -77,4 +77,4 @@ el resto. Se entiende de verdad recién cuando se construye — y eso haremos.
 - [ ] Entiendo que Kotlin es el lenguaje y Compose la herramienta de UI (son cosas distintas).
 - [ ] Entiendo la idea general: la UI no habla directo con la API ni con la base de datos.
 
-**Siguiente**: [01 — El entorno](/capitulos/01-entorno/)
+**Siguiente**: [01 — El entorno](/pokedex/capitulos/01-entorno/)
