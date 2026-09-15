@@ -1,0 +1,23 @@
+# Gradle
+.gradle
+/build
+.kotlin
+
+# Android Studio / IntelliJ
+/.idea/
+*.iml
+/captures
+local.properties
+
+# Native builds
+.externalNativeBuild
+.cxx
+
+# Editors and local tooling
+.obsidian/
+.atl/
+CLAUDE.md
+AGENTS.md
+
+# OS
+.DS_Store
