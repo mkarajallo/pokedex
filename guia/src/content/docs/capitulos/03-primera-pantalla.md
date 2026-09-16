@@ -310,7 +310,7 @@ Y se usan con la sintaxis que ya conocés — trailing lambdas anidados:
 ```kotlin
 Column {
     Text("Pikachu")
-    Text("N.º 025")
+    Text("N.º 25")
     Text("Tipo: Eléctrico")
 }
 ```
@@ -352,8 +352,8 @@ Todos los composables bien escritos reciben este parámetro, y la primera vez
 confunde porque la palabra aparece tres veces seguidas:
 
 ```kotlin
-fun FichaPokemon(nombre: String, modifier: Modifier = Modifier) {
-//               nombre del parámetro ↑        ↑ tipo    ↑ default
+fun FichaPokemon(name: String, modifier: Modifier = Modifier) {
+//             nombre del parámetro ↑        ↑ tipo    ↑ default
     Column(modifier = modifier) {   // ← y acá se USA lo recibido
         // ...
     }
@@ -370,7 +370,7 @@ afuera** — igual que pasarle `style` o `className` a un componente de React:
 
 ```kotlin
 FichaPokemon(
-    nombre = "Pikachu",
+    name = "Pikachu",
     modifier = Modifier.padding(innerPadding),  // instrucciones desde afuera
 )
 ```
@@ -393,7 +393,7 @@ Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),     // 8.dp entre cada hijo
 ) {
     Text("Pikachu")
-    Text("N.º 025")
+    Text("N.º 25")
 }
 ```
 
@@ -410,9 +410,9 @@ sí sin que cada uno tenga que preocuparse por sus márgenes.
 Vamos a crear la primera pieza real de la Pokédex: una ficha de Pokémon.
 
 1. Debajo de `Greeting`, creá un composable `FichaPokemon` que reciba
-   `nombre: String`, `numero: Int` y `tipo: String`, más el `modifier`
+   `name: String`, `numero: Int` y `tipo: String`, más el `modifier`
    opcional de rigor.
-2. Adentro, una `Column` que muestre tres `Text`: el nombre, `"N.º 025"`
+2. Adentro, una `Column` que muestre tres `Text`: el nombre, `"N.º 25"`
    (formateado desde el número) y `"Tipo: Eléctrico"` (desde el tipo).
    Separá los hijos con `Arrangement.spacedBy(4.dp)`.
 3. Escribile su propio `@Preview` con un Pokémon de ejemplo.
@@ -510,6 +510,11 @@ fun ListaPokemon(pokemones: List<Pokemon>, modifier: Modifier = Modifier) {
     }
 }
 ```
+
+> 💡 **Ojo**: esta `data class Pokemon` es **nueva** — no es la del ejercicio del
+> capítulo 02 (aquella tenía `nombre`, `nivel` y `tipo`, y era un ejercicio de
+> Playground). Esta, con
+> `name`, `numero` y `tipo`, es la que la app va a usar de acá en adelante.
 
 Leelo con calma: `forEach` recorre la lista, y en cada vuelta **llama a un
 composable** con los datos de ese Pokémon. Es el equivalente exacto de

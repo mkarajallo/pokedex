@@ -99,6 +99,7 @@ Las piezas que importan hoy:
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()              // ← la app puede dibujar hasta los bordes de la pantalla
         setContent {                    // ← "montá esta UI" (como el render de React)
             PokedexTheme {              // ← el tema envuelve todo
                 Scaffold { innerPadding ->
@@ -165,4 +166,4 @@ del capítulo.
 - [ ] Sé qué es el SDK, qué es Gradle y qué hace el Gradle sync.
 - [ ] La app de plantilla corre en el emulador o en un teléfono físico.
 
-**Anterior**: [00 — Introducción](/pokedex/capitulos/00-introduccion/) · **Siguiente**: 02 — Kotlin esencial *(próximamente)*
+**Anterior**: [00 — Introducción](/pokedex/capitulos/00-introduccion/) · **Siguiente**: [02 — Kotlin esencial](/pokedex/capitulos/02-kotlin-esencial/)
