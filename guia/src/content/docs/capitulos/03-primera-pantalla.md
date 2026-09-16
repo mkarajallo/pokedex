@@ -643,4 +643,4 @@ fun ListaPokemonPreview() {
 - [ ] Puedo dibujar una lista de datos recorriéndola con `forEach` y llamando
       a otro composable (composición).
 
-**Anterior**: [02 — Kotlin esencial](/pokedex/capitulos/02-kotlin-esencial/) · **Siguiente**: 04 *(próximamente)*
+**Anterior**: [02 — Kotlin esencial](/pokedex/capitulos/02-kotlin-esencial/) · **Siguiente**: [04 — Tarjetas y listas con Material](/pokedex/capitulos/04-tarjetas-material/)
