@@ -417,6 +417,24 @@ Las operaciones que ya conocés, lado a lado:
 > es una función que recibe una lambda como último argumento. Toda la UI se
 > construye con esta sintaxis.
 
+### ¿Y el `for` clásico?
+
+Existe, y se lee casi igual que en JS:
+
+```kotlin
+for (pokemon in equipo) {        // JS: for (const pokemon of equipo)
+    println(pokemon.nombre)
+}
+
+for (i in 1..3) {                // los rangos también funcionan acá
+    println(i)                   // imprime 1, 2, 3
+}
+```
+
+En la práctica lo vas a escribir poco: para colecciones, Kotlin favorece
+`forEach`, `map` y compañía. Pero cuando aparezca un `for` en código ajeno,
+ya sabés leerlo.
+
 ### Ejercicio 5
 
 Partiendo de la `data class Pokemon` del ejercicio anterior:
@@ -639,5 +657,5 @@ fun main() {
 - [ ] Sé que `listOf` crea listas de solo lectura y `mutableListOf` editables.
 - [ ] Puedo usar `if` y `when` como expresiones que devuelven un valor.
 
-**Anterior**: [01 — El entorno](/pokedex/capitulos/01-entorno/) · **Siguiente**: 03 — Primera pantalla con Compose *(próximamente)*
+**Anterior**: [01 — El entorno](/pokedex/capitulos/01-entorno/) · **Siguiente**: [03 — Primera pantalla con Compose](/pokedex/capitulos/03-primera-pantalla/)
 
