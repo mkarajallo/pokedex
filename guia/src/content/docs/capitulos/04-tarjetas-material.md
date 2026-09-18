@@ -428,4 +428,4 @@ que `onClick={() => seleccionar(pokemon)}` dentro de un `.map()` de React.
 - [ ] Puedo explicar qué hace `LazyColumn` distinto de `Column`, y escribir
       `items(lista) { ... }` con el import correcto.
 
-**Anterior**: [03 — Primera pantalla con Compose](/pokedex/capitulos/03-primera-pantalla/) · **Siguiente**: 05 *(próximamente)*
+**Anterior**: [03 — Primera pantalla con Compose](/pokedex/capitulos/03-primera-pantalla/) · **Siguiente**: [05 — Estado y recomposición](/pokedex/capitulos/05-estado/)
