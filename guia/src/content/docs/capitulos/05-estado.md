@@ -167,9 +167,10 @@ Antes de tocar la Pokédex, comprueba la recomposición con tus propias manos:
 1. En `MainActivity.kt`, crea el composable `Contador` de la sección 2
    (con `remember` y `mutableStateOf`).
 2. Escríbele su `@Preview`.
-3. En `setContent`, reemplaza **temporalmente** `ListaPokemon` por
-   `Contador(modifier = Modifier.padding(innerPadding))` — la lista vuelve en
-   el próximo ejercicio.
+3. En `setContent`, comenta **temporalmente** la llamada a `ListaPokemon`
+   (con `/* */`, como en JavaScript) y coloca en su lugar
+   `Contador(modifier = Modifier.padding(innerPadding))` — la lista se
+   descomenta en el próximo ejercicio.
 4. Ejecuta la app y toca el botón varias veces: el número debe subir.
 5. **El experimento**: elimina `remember { }` (deja
    `var clicks by mutableStateOf(0)`) y vuelve a probar. Observa qué pasa con
@@ -301,10 +302,11 @@ Tres detalles para leer con atención:
   `alt` de una imagen en HTML. Describe la **acción**, y por eso también
   cambia con el estado.
 
-Una pregunta que conviene hacerse antes del ejercicio: `FichaPokemon` se llama
-15 veces (una por Pokémon). ¿Cuántas cajas de estado habrá? **Quince,
+Una pregunta que conviene hacerse antes del ejercicio: si hay varias fichas en
+pantalla, ¿cuántas cajas de estado habrá? **Una por cada ficha visible,
 independientes** — cada llamada a un composable es una instancia con su propia
 memoria, igual que cada `<Ficha />` de React tiene su propio `useState`.
+(¿Por qué "visible" y no "quince"? El experimento del paso 6 lo revela.)
 
 ### Ejercicio 2
 
