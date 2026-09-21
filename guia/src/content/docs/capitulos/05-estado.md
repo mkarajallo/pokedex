@@ -620,4 +620,4 @@ favoritos`) y el conjunto, que nunca murió, tiene la respuesta.
 - [ ] Sé por qué el estado local de un elemento de `LazyColumn` se pierde al
   scrollear, y cómo el hoisting lo resuelve.
 
-**Anterior**: [04 — Tarjetas y listas con Material](/pokedex/capitulos/04-tarjetas-material/) · **Siguiente**: 06 *(próximamente)*
+**Anterior**: [04 — Tarjetas y listas con Material](/pokedex/capitulos/04-tarjetas-material/) · **Siguiente**: [06 — Login, arquitectura y estado](/pokedex/capitulos/06-login-arquitectura/)

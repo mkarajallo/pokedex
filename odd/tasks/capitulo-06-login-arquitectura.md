@@ -1,0 +1,65 @@
+# Capítulo 06 — Login: arquitectura y estado
+
+## Objetivo
+
+Escribir y enseñar el capítulo 06 de la guía: la primera funcionalidad completa
+(login local) construida con Clean Architecture + MVVM y el patrón State/Intent,
+según el enunciado del TP (§3.1, §8, §10, §12, §13, §18).
+
+## Problema / Por qué
+
+El TP exige MVVM + Clean Architecture con State/Intent, pero la guía (ch00-05)
+nunca enseñó los conceptos de Kotlin que esos patrones usan: `interface`,
+`object`/`data object`, `sealed class`, ni `ViewModel`/`StateFlow`.
+Decisión (auditoría 2026-09-21): enseñarlos justo antes de usarse, dentro del
+capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
+
+## Alcance
+
+- Guía: `guia/src/content/docs/capitulos/06-login-arquitectura.md` (nuevo).
+- App: pantalla de login con ViewModel, use case y repositorio local fake,
+  en capas `presentation/domain/data`.
+- Roadmap (`index.mdx`) y footer de ch05 actualizados.
+- Fuera de alcance: navegación real (ch07), Hilt (ch09), backend.
+
+## Restricciones
+
+- Español neutro en la guía; sin jerga regional (regla permanente del usuario).
+- Toda API nueva se explica con anatomía completa e imports exactos ANTES de
+  los ejercicios; enseñanza en chat por micro-piezas con pregunta de control.
+- Toda duda resuelta en chat se retroalimenta a la guía.
+- TDD: no aplica (proyecto de guía docente; sin runner configurado para docs).
+
+## Tareas
+
+- [ ] T1. Roadmap actualizado (ch06/ch08) + scaffold del capítulo 06 con
+  lección 1 "Kotlin para arquitectura" (`interface`, `object`, `sealed class`)
+  y ejercicio 1. Footer de ch05 enlaza ch06. — ruta: inline (archivos: 1 no
+  trivial + 2 ediciones mecánicas)
+- [ ] T2. Lección 2: Clean Architecture + MVVM — el mapa de capas y por qué.
+- [ ] T3. Lección 3: el patrón State + Intent (data class de estado, sealed de
+  intents, la firma `Screen(state, onIntent)`).
+- [ ] T4. Lección 4: `ViewModel` + `StateFlow` mínimo (`collectAsState`).
+- [ ] T5. Lección 5: construir el login en la app por capas (domain: use case +
+  repository interface; data: repo fake; presentation: screen + viewmodel).
+- [ ] T6. Ejercicios resueltos por Mario integrados con soluciones + errores
+  vistos en batalla; checkpoint final; capítulo marcado ✅ en roadmap.
+
+## Criterios de aceptación
+
+- La guía compila (`astro build` con Node 22 vía fnm) y el capítulo aparece en
+  el índice.
+- El login funciona en la app: credenciales fijas correctas → pantalla
+  principal; incorrectas → error visible; sin lógica de negocio en composables.
+- Mario respondió correctamente las preguntas de control de cada lección.
+
+## Verificación
+
+- `cd guia && eval "$(fnm env)" && fnm use 22 && npm run build` (guía).
+- Build de la app en Android Studio (la corre Mario; evidencia: su reporte).
+
+## Progreso
+
+- 2026-09-21: auditoría TP vs guía hecha; huecos identificados; plan aprobado
+  por Mario. T1 en curso (ruta inline; trigger de escritor no disparado: un
+  solo archivo no trivial).
