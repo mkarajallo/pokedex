@@ -44,7 +44,13 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   errores de batalla en la guía (commit `d7252b6`). Assess: medium
   (executable), `review_due=false` (`under_budget`) — slice medium pendiente
   hasta alcanzar presupuesto; frontera revisada sigue en la base del slice.
-- [ ] T2. Lección 2: Clean Architecture + MVVM — el mapa de capas y por qué.
+- [x] T2. Lección 2: Clean Architecture + MVVM enseñada en chat por
+  micro-piezas (3 piezas: capas/restaurante, MVVM/mozo, viaje completo);
+  Mario respondió bien las 3 preguntas de control (una necesitó replanteo más
+  simple). Backport a la guía: secciones 3 y 4 + checkpoint (commit
+  `c0c5d7a`; astro build verde, 11 páginas). — ruta: inline (1 archivo no
+  trivial). RDD assess (base `dbd0a75`, committed-only): medium, 343 líneas,
+  `review_due=false` (`under_budget`) — slice sigue pendiente.
 - [ ] T3. Lección 3: el patrón State + Intent (data class de estado, sealed de
   intents, la firma `Screen(state, onIntent)`).
 - [ ] T4. Lección 4: `ViewModel` + `StateFlow` mínimo (`collectAsState`).
