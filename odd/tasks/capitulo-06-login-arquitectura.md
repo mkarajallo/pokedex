@@ -37,6 +37,13 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   y ejercicio 1. Footer de ch05 enlaza ch06. — ruta: inline (archivos: 1 no
   trivial + 2 ediciones mecánicas). Commit `dbd0a75`; astro build verde
   (11 páginas); RDD assess: passive, review no debida, frontera avanza.
+- [x] T1b. Lección 1 enseñada en chat por micro-piezas tras feedback de
+  densidad (Mario se perdió desde `override`); guía reescrita gradual
+  (commits `92dc75f`, `0c1d89c`). Ejercicio 1 resuelto por Mario en 3
+  iteraciones; `LoginIntent.kt` real en `presentation/login` + solución con
+  errores de batalla en la guía (commit `d7252b6`). Assess: medium
+  (executable), `review_due=false` (`under_budget`) — slice medium pendiente
+  hasta alcanzar presupuesto; frontera revisada sigue en la base del slice.
 - [ ] T2. Lección 2: Clean Architecture + MVVM — el mapa de capas y por qué.
 - [ ] T3. Lección 3: el patrón State + Intent (data class de estado, sealed de
   intents, la firma `Screen(state, onIntent)`).
