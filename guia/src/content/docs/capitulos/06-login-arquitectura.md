@@ -180,6 +180,8 @@ El conjunto cerrado se consume con `when` (el pariente del `switch` de
 JavaScript, visto en el capítulo 02):
 
 ```kotlin
+val resultado: ResultadoLogin = validar(usuario, contrasena)
+
 when (resultado) {
     is ResultadoLogin.Exito -> irAPantallaPrincipal()
     is ResultadoLogin.Error -> mostrarMensaje(resultado.mensaje)
@@ -198,11 +200,14 @@ proyecto deja de compilar.** Android Studio subraya el `when` en rojo:
 
 ```text
 'when' expression must be exhaustive, add necessary 'is SesionExpirada' branch
+or 'else' branch instead
 ```
 
 Como la familia está sellada, el compilador tiene la lista completa: cuenta
 las ramas del `when`, ve que falta una, y se niega a continuar hasta que se
-maneje. En JavaScript, el `switch` con el caso olvidado corre feliz — y el día
+maneje. Nota que el mensaje ofrece una salida de emergencia: una rama `else`.
+Evítala en familias selladas — un `else` "atrapa todo" silencia justamente
+esta detección, y la próxima variante olvidada pasará sin aviso. En JavaScript, el `switch` con el caso olvidado corre feliz — y el día
 que llega el caso nuevo, la pantalla no hace nada o explota, en producción.
 
 El segundo regalo es el **cast inteligente**: dentro de la rama
@@ -314,9 +319,9 @@ forma de entenderlas es un restaurante:
 cocina, la cocina al proveedor. Cada capa habla **solamente con la siguiente**,
 y siempre a través de un **contrato** — la `interface` de la sección 2.1.
 
-¿Por qué tanta ceremonia? Repite el experimento mental del capítulo 08: hoy
-las credenciales se comparan contra texto fijo; mañana se consultan a un
-servidor. Con este mapa, ese cambio toca **una sola capa** — `data`. Ni la
+¿Por qué tanta ceremonia? Repite el experimento mental de la sección 2.1: hoy
+las credenciales se comparan contra texto fijo; en el capítulo 08 se
+consultarán a un servidor. Con este mapa, ese cambio toca **una sola capa** — `data`. Ni la
 cocina ni el salón se enteran, porque la cocina pidió el contrato ("alguien
 que sepa `validar`"), y no le importa si quien responde es la alacena casera o
 el servidor. Cambia el empleado, no el aviso.
