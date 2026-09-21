@@ -290,4 +290,114 @@ Errores frecuentes en este ejercicio, vistos en batalla:
 
 ---
 
+## 3. Clean Architecture: el mapa de capas
+
+Con las tres herramientas de Kotlin en la mano, veamos la estructura que el
+enunciado exige. Hasta ahora todo el código vive en `MainActivity.kt`: datos,
+estado y UI juntos. Clean Architecture corta eso en **tres capas**, y la mejor
+forma de entenderlas es un restaurante:
+
+- **`presentation` (el salón)**: lo que el cliente ve y toca — las mesas, el
+  menú, el mozo que toma el pedido. En la aplicación: los composables y todo
+  lo que rodea a la pantalla. Aquí vive el `LoginIntent` del ejercicio 1 — por
+  eso su paquete se llama `presentation.login`.
+- **`domain` (la cocina)**: las **recetas** — las reglas del negocio. "Un
+  login es válido si..." es una receta. La cocina no sabe cómo es el salón ni
+  de dónde vienen los ingredientes: solo sabe cocinar.
+- **`data` (el proveedor)**: de dónde salen los ingredientes. Hoy, una
+  comparación fija contra `admin` / `123456` — una alacena casera. En el
+  capítulo 08, un servidor real.
+
+### La regla de oro
+
+**El salón nunca entra al depósito.** El cliente le pide al mozo, el mozo a la
+cocina, la cocina al proveedor. Cada capa habla **solamente con la siguiente**,
+y siempre a través de un **contrato** — la `interface` de la sección 2.1.
+
+¿Por qué tanta ceremonia? Repite el experimento mental del capítulo 08: hoy
+las credenciales se comparan contra texto fijo; mañana se consultan a un
+servidor. Con este mapa, ese cambio toca **una sola capa** — `data`. Ni la
+cocina ni el salón se enteran, porque la cocina pidió el contrato ("alguien
+que sepa `validar`"), y no le importa si quien responde es la alacena casera o
+el servidor. Cambia el empleado, no el aviso.
+
+Si en cambio la View le hablara directo a `data`, la lógica de negocio se
+filtraría a la UI — exactamente lo que el enunciado prohíbe — y cada cambio de
+proveedor sería una cirugía a corazón abierto en la pantalla.
+
+---
+
+## 4. MVVM: quiénes viven en el salón
+
+La capa `presentation` no es una sola pieza: adentro viven **dos**, y ese
+reparto tiene nombre propio — **MVVM** (*Model-View-ViewModel*):
+
+- **La View (la mesa y el menú)**: tus composables. Son **tontos a
+  propósito**: dibujan lo que les dicen que dibujen, y cuando el usuario toca
+  algo no deciden nada — solo **avisan**. ¿Y cómo avisan? Con el
+  `LoginIntent`: cada intent es un pedido anotado — "cambió el usuario",
+  "cambió la contraseña", "se presionó el botón".
+- **El ViewModel (el mozo)**: recibe esos pedidos, decide qué hacer con cada
+  uno (si hace falta, va a la cocina), y mantiene el **estado** de la
+  pantalla: qué hay escrito en cada campo, si hay que mostrar un error.
+
+En una frase: **la View muestra y avisa; el ViewModel recibe y decide.** Nunca
+al revés. Si en la pantalla aparece el texto rojo "Contraseña incorrecta", la
+View lo **dibujó**, pero el ViewModel **decidió** que había que mostrarlo.
+
+### El viaje completo de un toque
+
+Todo el mapa, unido. El usuario toca "Iniciar sesión":
+
+1. **View**: no decide nada, solo avisa → entrega `LoginIntent.Enviar` al
+   ViewModel.
+2. **ViewModel** (mozo): recibe el pedido y se lo lleva a la cocina →
+   "valídame este usuario y contraseña".
+3. **Domain** (cocina): aplica la receta, y para los ingredientes usa el
+   **contrato** → "proveedor, ¿estas credenciales son válidas?".
+4. **Data** (proveedor): responde `true` o `false`. La respuesta vuelve por el
+   mismo camino hasta el ViewModel.
+5. **ViewModel**: con la respuesta, **actualiza el estado** — "hay error,
+   muestra tal mensaje".
+6. **View**: el estado cambió → la pantalla se **redibuja** sola.
+
+¿El paso 6 suena conocido? Es la **recomposición** del capítulo 05: estado
+cambia → Compose redibuja. Todo lo aprendido se conecta en un solo viaje.
+
+### Checkpoint
+
+Tres preguntas para verificar el mapa antes de seguir:
+
+<details>
+<summary>1. En el capítulo 08 el login pasará de comparar texto fijo a
+consultar un servidor. ¿Qué capas cambian?</summary>
+
+Solo **`data`**. `domain` pidió el contrato (`interface`) y no le importa
+quién lo cumpla; `presentation` ni se entera. Cambia el empleado, no el aviso.
+
+</details>
+
+<details>
+<summary>2. Aparece en pantalla el error "Contraseña incorrecta". ¿Quién
+decidió mostrarlo y quién lo dibujó?</summary>
+
+El **ViewModel decidió** (recibió la respuesta de la cocina y actualizó el
+estado); la **View dibujó** (el estado cambió y se recompuso). Cada pieza en
+su rol.
+
+</details>
+
+<details>
+<summary>3. ¿Puede un composable preguntarle directamente al repositorio de
+`data` si el login fue exitoso?</summary>
+
+No. La regla de oro: cada capa habla solo con la siguiente. Si la View
+salteara al ViewModel, la lógica de negocio viviría en la UI — lo que el
+enunciado prohíbe — y probar o cambiar esa lógica exigiría levantar la
+pantalla entera.
+
+</details>
+
+---
+
 **Anterior**: [05 — Estado y recomposición](/pokedex/capitulos/05-estado/) · **Siguiente**: 07 *(próximamente)*
