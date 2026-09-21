@@ -247,12 +247,46 @@ usuario:
 2. Escribir en el campo de contraseña (llega el texto nuevo).
 3. Presionar el botón de iniciar sesión (no lleva datos).
 
-**Tu tarea**: modela una `sealed class LoginIntent` con una variante por
-acción, eligiendo para cada una entre `data class` y `data object` según lleve
-datos o no. Este código será, sin cambios, la primera pieza real del login de
-la aplicación.
+**Tu tarea**: crea el paquete `presentation.login` (clic derecho sobre
+`com.mkarajallo.pokedex` → New → Package), dentro un archivo `LoginIntent.kt`,
+y modela una `sealed class LoginIntent` con una variante por acción, eligiendo
+para cada una entre `data class` y `data object` según lleve datos o no. Este
+código será, sin cambios, la primera pieza real del login de la aplicación.
 
-*(La solución se agregará aquí después de resolverlo.)*
+<details>
+<summary>Solución (intenta resolverlo antes de abrir)</summary>
+
+```kotlin
+package com.mkarajallo.pokedex.presentation.login
+
+sealed class LoginIntent {
+    data class CambioUsuario(val valor: String) : LoginIntent()
+    data class CambioContrasena(val valor: String) : LoginIntent()
+    data object Enviar : LoginIntent()
+}
+```
+
+Errores frecuentes en este ejercicio, vistos en batalla:
+
+- **Firmar con una familia inventada** (`data object User : Usuario()`): a la
+  derecha del `:` va siempre el nombre de la **familia** — todas las variantes
+  terminan en `: LoginIntent()`, porque todas *son* acciones del login. A la
+  izquierda va el nombre de la variante.
+- **Invertir la regla de los datos**: los campos de texto entregan el texto
+  nuevo → llevan datos → `data class(val valor: String)`. El botón solo
+  "ocurrió" → sin datos → `data object`.
+- **`data class` sin parámetros** (`data class CambioUsuario :
+  LoginIntent()`): una `data class` exige al menos un parámetro — sin él, el
+  texto del usuario no tendría por dónde viajar. Error literal del compilador:
+  `Data class must have at least one primary constructor parameter`.
+- **`data object` con parámetros** (`data object Enviar(val mensaje: String)`):
+  un `object` es la instancia única que ya nació — no tiene constructor, así
+  que no puede llevar paréntesis. No compila.
+- **Nombres que describen el widget o una orden** (`addUser`, `Buttom`): las
+  variantes se nombran en PascalCase y describen **lo que pasó**: cambió el
+  usuario, cambió la contraseña, se envió.
+
+</details>
 
 ---
 
