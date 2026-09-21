@@ -58,7 +58,16 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   Respondió bien las 3 preguntas finales (Enviar razonado por "no lleva
   datos"). Backport a la guía: sección 5 completa con esos andamios (commit
   `6909c0f`; astro build verde, 11 páginas). — ruta: inline (1 archivo no
-  trivial). RDD assess pendiente de registrar tras el commit.
+  trivial). RDD assess (base `dbd0a75`, committed-only): medium, 517 líneas,
+  `review_due=true` (`slice_budget_reached`) → Mario otorgó consentimiento;
+  revisión nativa medium, 1 lente (review-reliability), APROBADA y confirmada
+  (lineage `review-7f723d358b70abb2`, autoridad consumida). Frontera revisada
+  avanza a `cbf4c95`. 6 hallazgos informativos; los 4 accionables corregidos
+  en `bd7480f` (declaración de `resultado` en el ejemplo de `when`, mensaje
+  completo del compilador + advertencia sobre `else`, referencia adelantada
+  al ch08 reescrita, newline final en `LoginIntent.kt`). El hallazgo sobre
+  compilación Kotlin no verificada queda pendiente: se registrará como
+  evidencia el próximo build de Mario en Android Studio.
 - [ ] T4. Lección 4: `ViewModel` + `StateFlow` mínimo (`collectAsState`).
 - [ ] T5. Lección 5: construir el login en la app por capas (domain: use case +
   repository interface; data: repo fake; presentation: screen + viewmodel).
