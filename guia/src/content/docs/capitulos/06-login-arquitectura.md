@@ -561,4 +561,274 @@ el **ViewModel**, que los lee y decide qué hacer con cada uno.
 
 ---
 
+## 6. El ViewModel: el mozo cobra vida
+
+Hasta aquí el ViewModel fue un personaje de la historia. En esta sección se
+escribe de verdad: la clase, la caja donde guarda el estado, la función que
+procesa los intents, y el cable que conecta todo con la pantalla.
+
+### 6.1. La clase, con su anatomía
+
+```kotlin
+import androidx.lifecycle.ViewModel
+
+class LoginViewModel : ViewModel() {
+    // aquí adentro va a vivir el estado
+}
+```
+
+- `class LoginViewModel` — una clase común, como `Pokemon` en el capítulo 02.
+- `: ViewModel()` — el mismo `:` de "es un" (sección 2.1): tu clase dice "yo
+  soy un ViewModel". `ViewModel` es una clase que Android trae hecha, y al
+  firmar con ella tu clase hereda sus superpoderes.
+- `import androidx.lifecycle.ViewModel` — este import sí hace falta:
+  `ViewModel` no es palabra clave del lenguaje, es una clase de Android.
+
+**¿Y cuál es el superpoder?** Recuerda el capítulo 05: el corazón de Pikachu
+se borraba al hacer scroll, porque `remember` vive dentro del composable — y
+cuando el composable muere, su estado muere con él. El ViewModel vive
+**afuera** de los composables. La pantalla puede redibujarse mil veces,
+incluso rotar el teléfono (que destruye y recrea toda la pantalla), y el
+ViewModel sigue ahí, con su estado intacto. Si aquel favorito hubiera vivido
+en un ViewModel, el corazón habría reaparecido pintado tras el scroll: la
+tarjeta muere igual, pero al renacer vuelve a pedir el dato... y el dato
+sigue vivo.
+
+### 6.2. La caja donde vive el estado
+
+```kotlin
+import kotlinx.coroutines.flow.MutableStateFlow
+
+class LoginViewModel : ViewModel() {
+    val estado = MutableStateFlow(LoginState())
+}
+```
+
+- `MutableStateFlow(...)` — una **caja observable**: guarda UN valor (el
+  estado actual) y **anuncia a los suscritos cada vez que ese valor cambia**.
+  Es la prima de `mutableStateOf` del capítulo 05 — misma idea de caja que
+  avisa — pero vive fuera de Compose, en el mundo del ViewModel.
+- `MutableStateFlow(LoginState())` — entre paréntesis va el **valor
+  inicial**. Y aquí cobran sentido los valores por defecto de la sección
+  5.1: `LoginState()` sin argumentos produce `usuario = ""`,
+  `contrasena = ""`, `error = null`. La pantalla arranca limpia.
+
+### 6.3. La caja privada y la ventana pública
+
+Hay un problema con la versión anterior: con `val estado` público, cualquiera
+que tenga el ViewModel puede hacer `estado.value = ...` y **escribir** la
+caja — incluso la View. Eso rompe la regla: los estados nuevos los fabrica
+SOLO el ViewModel. La solución es un dúo de dos líneas, convención estándar
+de Android:
+
+```kotlin
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class LoginViewModel : ViewModel() {
+    private val _state = MutableStateFlow(LoginState())
+    val state: StateFlow<LoginState> = _state
+}
+```
+
+- **`private`** — palabra clave nueva: "esto solo se ve **dentro de esta
+  clase**". Nadie de afuera puede ni nombrar `_state`. Es como los campos
+  `#privados` de las clases de JavaScript.
+- **`_state`** (con guion bajo) — la caja **completa**, con lectura y
+  escritura. El guion bajo es pura convención de nombres: "soy la versión
+  privada".
+- **`val state: StateFlow<LoginState> = _state`** — la MISMA caja, asomada
+  por una ventana de tipo `StateFlow`: la versión **solo lectura**.
+  `MutableStateFlow` es escribible; `StateFlow` solo deja mirar. Mismo
+  objeto, menos permisos.
+
+¿Suena conocido el truco? Es el de la sección 2.1 (la `interface`): mostrar
+hacia afuera un tipo con menos poderes que el objeto real.
+
+### 6.4. `copy()`: fabricar el estado nuevo
+
+¿Cómo se fabrica un estado nuevo a partir del actual? Las `data class` traen
+un regalo más: el método **`copy()`**.
+
+```kotlin
+val estadoActual = LoginState(usuario = "adm", contrasena = "", error = null)
+
+val estadoNuevo = estadoActual.copy(usuario = "admi")
+
+// estadoNuevo.usuario    = "admi"  ← el ÚNICO corregido (lo nombraste)
+// estadoNuevo.contrasena = ""      ← copiado del original
+// estadoNuevo.error      = null    ← copiado del original
+```
+
+- Viene **gratis** con toda `data class` — igual que el `toString` legible y
+  la comparación por contenido del capítulo 02.
+- Crea un objeto **NUEVO**, idéntico al original **excepto** en los campos
+  que nombras entre paréntesis.
+- `estadoActual` queda intacto. No se edita nada — se fabrica. Por eso los
+  campos pueden ser `val`.
+
+> ⚠️ **El malentendido clásico, visto en batalla**: creer que `copy()` crea
+> un objeto solo con los campos que nombras. NO: es una **fotocopia
+> completa** del original, con solo los campos nombrados corregidos —
+> como fotocopiar un formulario llenado y corregir con lapicera UN
+> casillero: los demás no se borran. Si `copy()` descartara lo no nombrado,
+> cada tecla en el campo usuario borraría la contraseña ya escrita.
+
+### 6.5. `onIntent`: el mozo procesa los pedidos
+
+La función estrella del ViewModel — la que recibe los avisos de la View:
+
+```kotlin
+fun onIntent(intent: LoginIntent) {
+    when (intent) {
+        is LoginIntent.CambioUsuario ->
+            _state.value = _state.value.copy(usuario = intent.valor)
+
+        is LoginIntent.CambioContrasena ->
+            _state.value = _state.value.copy(contrasena = intent.valor)
+
+        LoginIntent.Enviar -> {} // la validación llega en la próxima sección
+    }
+}
+```
+
+Desarmada capa por capa:
+
+**Capa 1 — la declaración.** `fun onIntent(intent: LoginIntent)`: ¿recuerdas
+que `LoginScreen` recibía una "función prestada" llamada `onIntent` (sección
+5.2)? **La función prestada es esta.** Cuando la View llama `onIntent(...)`,
+esta función del ViewModel es la que se ejecuta. Su parámetro es de tipo
+`LoginIntent` — **la familia entera**, no una variante: el mismo truco de la
+`interface` (pedir el tipo general acepta a cualquier miembro), así que por
+esta puerta puede entrar cualquiera de los tres avisos.
+
+**Capa 2 — el `when (intent)`.** Pregunta cuál de las tres variantes llegó;
+una sola rama se ejecuta. Detalle fino: `CambioUsuario` y `CambioContrasena`
+van con `is` (son `data class`: hay infinitas instancias posibles, se
+pregunta por tipo), pero `Enviar` va **sin `is`** (es `data object`: existe
+UNA sola instancia, se compara directo con ella). Y como `LoginIntent` es
+`sealed`, el compilador exige las tres ramas. Dentro de cada rama `is`
+funciona el **cast inteligente** (sección 2.3): Kotlin ya sabe qué variante
+es, así que `intent.valor` está disponible directo.
+
+**Capa 3 — la línea densa, estirada.** La línea larga es la versión
+comprimida de TRES pasos. Escrita con variables intermedias es 100%
+equivalente — y si la comprimida te cuesta, usa la estirada:
+
+```kotlin
+is LoginIntent.CambioUsuario -> {
+    val actual = _state.value                          // 1. leo lo que hay en la caja
+    val nuevo = actual.copy(usuario = intent.valor)    // 2. fotocopia con la corrección
+    _state.value = nuevo                               // 3. meto la fotocopia en la caja
+}
+```
+
+La versión de una línea, leída de derecha a izquierda: *leo el estado actual
+→ fotocopio con el campo corregido → meto la fotocopia en la caja*. Y como
+la caja es observable, anuncia el cambio... y la View se redibuja.
+
+**Capa 4 — el `{}` vacío.** `LoginIntent.Enviar -> {}` es un casillero
+reservado: el compilador exige la rama (familia sellada), pero la validación
+de verdad necesita la cocina, que se construye en la próxima sección.
+
+> 🐛 **El bug del paso olvidado**: imagina que escribes los pasos 1 y 2 pero
+> olvidas el 3 — la fotocopia corregida queda en una variable local, y nadie
+> la mete en la caja. ¿Qué ve el usuario? **Un campo congelado**: tipea y
+> tipea y el texto no cambia. Sin contenido nuevo en la caja no hay anuncio;
+> sin anuncio no hay redibujo. La regla que lo explica todo:
+>
+> **El campo de texto NO muestra lo que tipea el teclado. Muestra lo que
+> dice la caja. Siempre. Únicamente.**
+>
+> El teclado solo dispara un aviso; si algún eslabón de la cadena no termina
+> guardando en la caja, la pantalla parece rota. Es un bug real que todo el
+> mundo comete alguna vez con Compose — ahora ya sabes diagnosticarlo.
+
+### 6.6. `collectAsState()`: la View se suscribe a la caja
+
+Falta un solo cable: que la View se **entere** de los anuncios.
+
+```kotlin
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+
+@Composable
+fun PantallaLogin(viewModel: LoginViewModel) {
+    val state by viewModel.state.collectAsState()
+
+    LoginScreen(
+        state = state,
+        onIntent = { intent -> viewModel.onIntent(intent) }
+    )
+}
+```
+
+- `viewModel.state` — la ventana pública de solo lectura (sección 6.3).
+- `.collectAsState()` — **suscribe este composable a la caja**: cada vez que
+  la caja anuncia, `state` toma el valor nuevo y el composable se recompone.
+  Es el puente entre el mundo del ViewModel y el mundo de Compose.
+- `by` — el mismo delegado del capítulo 05 (`var clicks by remember...`):
+  permite usar `state` directo como un `LoginState`, sin `.value`.
+- `onIntent = { intent -> viewModel.onIntent(intent) }` — el préstamo de la
+  función, en vivo: una lambda que toma cada aviso y se lo entrega al
+  `onIntent` del ViewModel.
+
+Por cierto: ¿la View acá es quién? `PantallaLogin` y `LoginScreen` — son
+composables, y **View = composable**: tu `FichaPokemon` de los capítulos
+03-05 siempre fue una View sin saberlo. Se le dice View (vista) porque es la
+parte que se VE; lo nuevo del capítulo es darle casa propia al "padre
+decisor" del hoisting: el ViewModel.
+
+**La cadena de dominós completa**, desde el toque hasta la pantalla:
+
+```text
+1. El ViewModel mete la fotocopia en la caja   (_state.value = nuevo)
+2. La caja anuncia; collectAsState recibe el valor nuevo
+3. El composable se redibuja usando el estado nuevo
+4. El usuario ve el texto nuevo en pantalla. FIN.
+```
+
+### Checkpoint
+
+<details>
+<summary>1. En el capítulo 05 el corazón se borraba al hacer scroll. Si el
+favorito viviera en un ViewModel, ¿qué pasaría?</summary>
+
+El corazón reaparecería pintado. La tarjeta muere igual al salir de
+pantalla, pero el ViewModel sobrevive con el dato; al renacer, la tarjeta lo
+vuelve a leer.
+
+</details>
+
+<details>
+<summary>2. ¿Cuál de las dos propiedades puede ver la View, y qué puede
+hacer con ella?</summary>
+
+Solo `state`, y solo **leer**: es la ventana `StateFlow` de solo lectura.
+`_state` es `private` y queda encerrada en el ViewModel.
+
+</details>
+
+<details>
+<summary>3. <code>estadoActual.copy(error = "Contraseña incorrecta")</code>
+— ¿qué pasa con <code>usuario</code> y <code>contrasena</code> en el estado
+nuevo?</summary>
+
+Se **copian tal cual** del original. `copy()` es una fotocopia completa con
+solo los campos nombrados corregidos.
+
+</details>
+
+<details>
+<summary>4. El campo de usuario muestra un texto. ¿De dónde sale: del
+teclado o de la caja?</summary>
+
+De la caja. El teclado solo dispara el aviso; lo que se dibuja es siempre el
+contenido actual del estado. Si la cadena aviso→fotocopia→caja se corta, el
+campo se congela aunque el usuario tipee.
+
+</details>
+
+---
+
 **Anterior**: [05 — Estado y recomposición](/pokedex/capitulos/05-estado/) · **Siguiente**: 07 *(próximamente)*
