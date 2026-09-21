@@ -84,6 +84,18 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   2x por salvaguardas del proveedor; Mario decidió continuar).
 - [ ] T5. Lección 5: construir el login en la app por capas (domain: use case +
   repository interface; data: repo fake; presentation: screen + viewmodel).
+  EN CURSO — Mario escribió 3 archivos reales guiado pieza por pieza:
+  `domain/RepositorioSesion.kt` (vio en vivo el error del contrato sin
+  cumplir y lo leyó del IDE), `data/RepositorioSesionLocal.kt` (primer
+  import de código propio), `presentation/login/LoginState.kt` (transcripta
+  con lectura guiada; recall en frío falló por fatiga — dictado con
+  significado por línea). Commit `7e46a85` + formato de MainActivity
+  `883b385`. IDE sin errores (evidencia de compilación del editor; build
+  completo de Android Studio aún pendiente de reportar). Falta: ensamblar
+  `LoginViewModel` (con `Enviar` llamando al repositorio), `LoginScreen` +
+  `PantallaLogin`, cablear en `MainActivity`, probar login real. Dos
+  candidatos de workspace intermedios fueron omitidos por Mario (ejercicio a
+  medio escribir) y expiraron por drift sin gastar consentimiento.
 - [ ] T6. Ejercicios resueltos por Mario integrados con soluciones + errores
   vistos en batalla; checkpoint final; capítulo marcado ✅ en roadmap.
 
