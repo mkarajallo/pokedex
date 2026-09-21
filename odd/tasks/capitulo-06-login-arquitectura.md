@@ -51,8 +51,14 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   `c0c5d7a`; astro build verde, 11 páginas). — ruta: inline (1 archivo no
   trivial). RDD assess (base `dbd0a75`, committed-only): medium, 343 líneas,
   `review_due=false` (`under_budget`) — slice sigue pendiente.
-- [ ] T3. Lección 3: el patrón State + Intent (data class de estado, sealed de
-  intents, la firma `Screen(state, onIntent)`).
+- [x] T3. Lección 3: State + Intent enseñada en chat; Mario se trabó dos
+  veces (metáfora "foto" sin código a la vista; origen de `onIntent`) y pidió
+  desglose — destrabaron la escena en cámara lenta, la explicación de
+  `onIntent` como parámetro (callback del ch05) y la tabla acción→aviso.
+  Respondió bien las 3 preguntas finales (Enviar razonado por "no lleva
+  datos"). Backport a la guía: sección 5 completa con esos andamios (commit
+  `6909c0f`; astro build verde, 11 páginas). — ruta: inline (1 archivo no
+  trivial). RDD assess pendiente de registrar tras el commit.
 - [ ] T4. Lección 4: `ViewModel` + `StateFlow` mínimo (`collectAsState`).
 - [ ] T5. Lección 5: construir el login en la app por capas (domain: use case +
   repository interface; data: repo fake; presentation: screen + viewmodel).
