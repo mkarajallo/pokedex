@@ -32,10 +32,11 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
 
 ## Tareas
 
-- [ ] T1. Roadmap actualizado (ch06/ch08) + scaffold del capítulo 06 con
+- [x] T1. Roadmap actualizado (ch06/ch08) + scaffold del capítulo 06 con
   lección 1 "Kotlin para arquitectura" (`interface`, `object`, `sealed class`)
   y ejercicio 1. Footer de ch05 enlaza ch06. — ruta: inline (archivos: 1 no
-  trivial + 2 ediciones mecánicas)
+  trivial + 2 ediciones mecánicas). Commit `dbd0a75`; astro build verde
+  (11 páginas); RDD assess: passive, review no debida, frontera avanza.
 - [ ] T2. Lección 2: Clean Architecture + MVVM — el mapa de capas y por qué.
 - [ ] T3. Lección 3: el patrón State + Intent (data class de estado, sealed de
   intents, la firma `Screen(state, onIntent)`).
