@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.mkarajallo.pokedex.ui.theme.PokedexTheme
 
 
-
 data class Pokemon(val name: String, val numero: Int, val tipo: String)
 
 val pokebola = listOf(
@@ -63,7 +62,9 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ListaPokemon(
                         pokemones = pokebola,
-                        modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .padding(horizontal = 16.dp),
                     )
                 }
             }
@@ -73,38 +74,39 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun FichaPokemon(
-    name:String,
+    name: String,
     numero: Int,
-    tipo:String,
+    tipo: String,
     esFavorito: Boolean,
-    onFavoritoClick:() -> Unit,
-    modifier: Modifier = Modifier,) {
+    onFavoritoClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
 
 
-    Card( modifier= modifier.fillMaxWidth()) {
+    Card(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
-        ){
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(name, style = MaterialTheme.typography.titleLarge)
-                Row( verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    "N.º $numero",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "N.º $numero",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     IconButton(onClick = onFavoritoClick) {
                         Icon(
                             imageVector = if (esFavorito) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                             contentDescription = if (esFavorito) "Quitar de favoritos" else "Agregar a favoritos",
                         )
                     }
-            }
+                }
             }
             Text("Tipo: $tipo", style = MaterialTheme.typography.bodyMedium)
         }
@@ -112,22 +114,22 @@ fun FichaPokemon(
 }
 
 @Composable
-fun ListaPokemon(pokemones: List<Pokemon>, modifier: Modifier = Modifier,) {
+fun ListaPokemon(pokemones: List<Pokemon>, modifier: Modifier = Modifier) {
 
     var favoritos by remember { mutableStateOf(setOf<Int>()) }
 
-    LazyColumn (
+    LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        ){
-        items(pokemones){ pokemon ->
+    ) {
+        items(pokemones) { pokemon ->
             FichaPokemon(
-                name=pokemon.name,
-                numero=pokemon.numero,
-                tipo=pokemon.tipo,
-                esFavorito= pokemon.numero in favoritos,
+                name = pokemon.name,
+                numero = pokemon.numero,
+                tipo = pokemon.tipo,
+                esFavorito = pokemon.numero in favoritos,
                 onFavoritoClick = {
-                    favoritos= if (pokemon.numero in favoritos)
+                    favoritos = if (pokemon.numero in favoritos)
                         favoritos - pokemon.numero
                     else
                         favoritos + pokemon.numero
@@ -141,9 +143,15 @@ fun ListaPokemon(pokemones: List<Pokemon>, modifier: Modifier = Modifier,) {
 @Composable
 fun FichaPokemonPreview() {
     PokedexTheme {
-        FichaPokemon(name = "Pikachu", numero = 25, tipo = "Eléctrico", esFavorito = true, onFavoritoClick = { })
+        FichaPokemon(
+            name = "Pikachu",
+            numero = 25,
+            tipo = "Eléctrico",
+            esFavorito = true,
+            onFavoritoClick = { })
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ListaPokemonPreview() {
