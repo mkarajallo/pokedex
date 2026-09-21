@@ -400,4 +400,160 @@ pantalla entera.
 
 ---
 
+## 5. El patrón State + Intent
+
+El ejercicio 1 dejó lista una mitad del patrón: `LoginIntent` modela todo lo
+que el usuario puede **hacer** en la pantalla. Esta sección construye la otra
+mitad — todo lo que la pantalla puede **mostrar** — y la firma que une ambas.
+
+### 5.1. El estado: una `data class`
+
+¿Qué necesita saber la pantalla de login para dibujarse? Exactamente tres
+cosas: qué hay escrito en el campo usuario, qué hay escrito en el campo
+contraseña, y si hay un mensaje de error para mostrar... o no. El patrón
+State dice: **esas tres cosas viajan juntas, en una sola `data class`** — la
+misma `data class` de los Pokémon del capítulo 02:
+
+```kotlin
+data class LoginState(
+    val usuario: String = "",
+    val contrasena: String = "",
+    val error: String? = null
+)
+```
+
+Dos detalles nuevos, con su anatomía:
+
+- **`= ""` — valor por defecto**: si al crear el objeto no pasas ese dato,
+  arranca con ese valor. `LoginState()` a secas crea el estado inicial:
+  campos vacíos, sin error. Es como los *default parameters* de JavaScript:
+  `function f(x = "")`.
+- **`String?` vs `String`**: `error` puede ser un texto **o** `null`, y
+  `null` significa "no hay error que mostrar" — la ausencia es un estado
+  válido, y el `?` la vuelve explícita. `usuario` nunca necesita `null`:
+  en el peor caso vale texto vacío `""`.
+
+Un `LoginState` es **un objeto con los valores que la pantalla muestra en
+este momento** — una captura del instante. Si el campo de usuario muestra
+`adm`, es porque el estado actual es:
+
+```kotlin
+LoginState(usuario = "adm", contrasena = "", error = null)
+```
+
+### 5.2. La firma que une las dos mitades
+
+El patrón conecta `LoginState` y `LoginIntent` en la **firma de la
+pantalla**:
+
+```kotlin
+@Composable
+fun LoginScreen(
+    state: LoginState,
+    onIntent: (LoginIntent) -> Unit
+)
+```
+
+`LoginScreen` recibe dos parámetros:
+
+1. `state` — el objeto con los valores a mostrar.
+2. `onIntent` — **una función que le prestan**. Su tipo, `(LoginIntent) ->
+   Unit`, se lee: "una función que recibe un `LoginIntent` y no devuelve
+   nada". `LoginScreen` no la escribe: se la entrega quien la llama, igual
+   que le entrega el `state`.
+
+¿Una función prestada por parámetro? Ya la usaste en el capítulo 05: la
+tarjeta con favorito recibía una función del padre, y al tocar el corazón la
+tarjeta no decidía nada — llamaba la función que le prestaron, y el padre
+cambiaba el estado. `onIntent` es exactamente eso, con un agregado: al
+llamarla le pasas **qué pasó** (el intent adentro).
+
+Las dos flechas del patrón:
+
+- **El estado baja** ⬇️: el ViewModel entrega el `state` y la View lo dibuja.
+- **Los intents suben** ⬆️: el usuario toca algo y la View llama
+  `onIntent(...)` con el aviso. No modifica nada — avisa.
+
+`LoginScreen` no conoce al ViewModel: solo recibe valores para dibujar y una
+función para avisar. Eso la hace tonta a propósito — y facilísima de
+previsualizar y probar.
+
+### 5.3. La escena en cámara lenta
+
+El campo de usuario muestra `adm`. El usuario tipea la letra `i`. Paso a
+paso:
+
+**Paso 1 — La View no puede editar el estado.** Todos los campos de
+`LoginState` son `val` — solo lectura, como ya sabes:
+
+```kotlin
+state.usuario = "admi"   // ❌ NO COMPILA: usuario es val
+```
+
+Android Studio lo subraya en rojo: el lenguaje mismo le prohíbe a la View
+modificar el estado. Los estados nuevos los fabrica el ViewModel.
+
+**Paso 2 — Entonces la View solo avisa**, con la variante correspondiente:
+
+```kotlin
+onIntent(LoginIntent.CambioUsuario("admi"))
+//  ↑         ↑
+//  |         el aviso: "cambió el usuario, ahora dice admi"
+//  llama a la función prestada y se lo entrega
+```
+
+Nota que viaja el **texto completo** (`"admi"`), no la letra tipeada.
+
+**Paso 3 — El ViewModel fabricará el estado nuevo** (con
+`usuario = "admi"`) y la pantalla se redibujará. Ese cableado es la próxima
+lección; hoy alcanza con el aviso.
+
+### 5.4. La tabla completa: acción → aviso
+
+Cada cosa que el usuario hace en la pantalla tiene su aviso con nombre:
+
+| El usuario... | La View avisa con... |
+|---|---|
+| tipea en el campo usuario | `LoginIntent.CambioUsuario(el texto nuevo)` |
+| tipea en el campo contraseña | `LoginIntent.CambioContrasena(el texto nuevo)` |
+| presiona "Iniciar sesión" | `LoginIntent.Enviar` |
+
+El botón usa el `data object`: no lleva datos, solo "ocurrió".
+
+Todo el patrón, en dos líneas:
+
+- **`LoginState`**: los 3 valores que la pantalla **muestra**.
+- **`LoginIntent`**: los 3 avisos de lo que el usuario **hizo**.
+
+### Checkpoint
+
+<details>
+<summary>1. ¿Por qué <code>error</code> es <code>String?</code> pero
+<code>usuario</code> es <code>String</code>?</summary>
+
+Porque "no hay error" es una situación real y válida: `null` la representa.
+`usuario` siempre tiene un valor — en el peor caso, `""`.
+
+</details>
+
+<details>
+<summary>2. ¿De dónde sale <code>onIntent</code> dentro de
+<code>LoginScreen</code>?</summary>
+
+Es un **parámetro**: una función que le entrega quien llama a la pantalla,
+igual que el `state`. La View solo la llama; nunca la define ella misma.
+
+</details>
+
+<details>
+<summary>3. ¿Cuál de las dos piezas lee la View para dibujarse, y quién lee
+los intents?</summary>
+
+La View **lee `LoginState`** para dibujarse. Los `LoginIntent` viajan hacia
+el **ViewModel**, que los lee y decide qué hacer con cada uno.
+
+</details>
+
+---
+
 **Anterior**: [05 — Estado y recomposición](/pokedex/capitulos/05-estado/) · **Siguiente**: 07 *(próximamente)*
