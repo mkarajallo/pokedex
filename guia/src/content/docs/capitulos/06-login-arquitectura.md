@@ -44,7 +44,7 @@ requieren ningún import**.
 
 ### 2.1. `interface`: el contrato
 
-Una interfaz declara **qué** se puede hacer, sin decir **cómo**:
+Piensa en una interfaz como un **aviso de trabajo**:
 
 ```kotlin
 interface RepositorioSesion {
@@ -52,12 +52,11 @@ interface RepositorioSesion {
 }
 ```
 
-Esto se lee: "cualquier cosa que sea un `RepositorioSesion` sabe validar un
-usuario y una contraseña, y responde con un `Boolean`". Nota que `validar` no
-tiene cuerpo — la interfaz solo declara la firma.
+Esto es el aviso: "se busca alguien que sepa `validar`: recibe usuario y
+contraseña, responde un `Boolean`". Por eso `validar` **no tiene cuerpo** — el
+aviso no hace el trabajo, solo lo describe.
 
-Quien cumple el contrato es una **clase que la implementa**, usando `:` (los
-dos puntos que en Kotlin significan "es un") y la palabra clave `override`:
+Ahora, alguien toma el trabajo:
 
 ```kotlin
 class RepositorioSesionLocal : RepositorioSesion {
@@ -67,18 +66,47 @@ class RepositorioSesionLocal : RepositorioSesion {
 }
 ```
 
-- `: RepositorioSesion` — esta clase **es un** `RepositorioSesion` y promete
-  cumplir su contrato completo.
-- `override` — marca que esta función implementa una declarada en la interfaz.
-  Es obligatoria: si se omite, el código no compila.
+Tres pasos para leerlo:
 
-**El equivalente web**: si conoces TypeScript, es su `interface` casi calcada.
-La diferencia de fondo no es sintáctica sino de uso: aquí las interfaces son la
-frontera entre capas de la arquitectura. El que **usa** un `RepositorioSesion`
-no sabe (ni le importa) si detrás hay una comparación fija, una base de datos o
-un servidor: solo conoce el contrato. Mañana se cambia la implementación y el
-resto de la aplicación ni se entera. Ese es el truco que hace todo lo demás
-posible.
+1. **`: RepositorioSesion` — la firma del contrato.** La clase dice "yo tomo
+   ese trabajo". Desde ese momento el compilador se pone estricto: firmaste,
+   ahora estás **obligado** a saber hacer todo lo que el aviso pedía.
+2. **`override` — el cumplimiento.** Significa: "esta función no es un invento
+   mío, es mi cumplimiento de lo que el contrato pedía". La firma es idéntica a
+   la del aviso (mismo nombre, mismos parámetros, mismo `Boolean`), pero ahora
+   sí tiene cuerpo: el trabajo hecho de verdad.
+3. **¿Y si la clase firma pero no escribe `validar`?** No compila. El que se
+   queja es el **compilador** — subrayado rojo en Android Studio — nunca el
+   usuario con la app corriendo. Es el mismo patrón de null safety: Kotlin
+   convierte errores de ejecución en errores de compilación.
+
+¿Por qué escribir la palabra `override` es obligatorio? Doble seguro: quien lee
+el código sabe al instante que esa función viene de un contrato, y el
+compilador verifica que la firma coincida con el aviso — un error de una letra
+en el nombre se detecta en el acto.
+
+**La recompensa: quien usa el repositorio pide el contrato, no la clase.**
+Cuando construyamos el ViewModel del login, va a pedir esto:
+
+```kotlin
+class LoginViewModel(
+    private val repositorio: RepositorioSesion  // pide el CONTRATO, no la clase
+)
+```
+
+El tipo del parámetro es `RepositorioSesion` — el aviso, no
+`RepositorioSesionLocal`. El ViewModel dice: "dame cualquier cosa que sepa
+validar; no me importa quién sea ni cómo lo haga". Como al empleador del aviso:
+le importa que el trabajo se **haga**, no quién lo hace.
+
+Ese es el truco que sostiene toda la arquitectura. Hoy el repositorio será una
+comparación fija (`admin` / `123456`); en el capítulo 08 será uno que consulta
+la API real — y el `LoginViewModel` no cambiará **ni una línea**, porque
+depende del contrato, y el contrato no cambia. Cambia el empleado, no el aviso.
+
+> 💡 Si conoces TypeScript: es su `interface`, casi calcada. Si solo conoces
+> JavaScript, no busques el equivalente — no existe, y esa es justamente la
+> novedad: un contrato que el compilador hace cumplir.
 
 ### 2.2. `object`: la instancia única
 
