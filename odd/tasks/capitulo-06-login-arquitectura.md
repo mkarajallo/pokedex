@@ -68,7 +68,20 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   al ch08 reescrita, newline final en `LoginIntent.kt`). El hallazgo sobre
   compilación Kotlin no verificada queda pendiente: se registrará como
   evidencia el próximo build de Mario en Android Studio.
-- [ ] T4. Lección 4: `ViewModel` + `StateFlow` mínimo (`collectAsState`).
+- [x] T4. Lección 4: ViewModel + StateFlow enseñada en chat en 6 piezas
+  (clase/superpoder, MutableStateFlow, private/_state+ventana, copy(),
+  onIntent por capas, collectAsState + cadena de dominós). Tropiezos
+  resueltos: misconception de copy() (creía que descartaba campos no
+  nombrados), View aterrizada como "= composable" (FichaPokemon), cadena
+  final por reconocimiento (ordenar B→A). Nueva regla permanente por
+  feedback de Mario: citar sección de la guía + tema, nunca "lección N" a
+  secas (numeración de chat ≠ guía). Backport: sección 6 completa con los
+  andamios pedidos — lectura derecha-a-izquierda, versión estirada en 3
+  pasos, bug del paso olvidado, "el campo muestra la caja, no el teclado"
+  (commit `c3512b8`; astro build verde, 11 páginas). — ruta: inline (1
+  archivo no trivial). Nota RDD: slice previo `bd7480f`+`6e915a0` sigue con
+  revisión pendiente (lineage `review-4e5f912876b6d7d3`, captura rechazada
+  2x por salvaguardas del proveedor; Mario decidió continuar).
 - [ ] T5. Lección 5: construir el login en la app por capas (domain: use case +
   repository interface; data: repo fake; presentation: screen + viewmodel).
 - [ ] T6. Ejercicios resueltos por Mario integrados con soluciones + errores
