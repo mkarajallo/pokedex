@@ -126,17 +126,33 @@ usa `Sesion()` — no hay constructor que llamar — sino directamente
 `Sesion.usuarioActual`. Es el patrón *singleton* del que quizá oíste hablar,
 convertido en palabra clave del lenguaje.
 
+**El equivalente web**: es como exportar un objeto literal desde un módulo de
+JavaScript (`export const sesion = { usuarioActual: null }`) — todos los que
+lo importan tocan el mismo objeto. Aquí es palabra clave del lenguaje.
+
+La pregunta para decidir entre `class` y `object` es una sola: **¿necesito
+varios, o necesito exactamente uno?** Varios Pokémon → `class`. Una sola
+sesión en toda la aplicación → `object`.
+
 Existe también la variante `data object`: igual que `object`, pero con la
 impresión legible de las `data class` (al registrarlo en un log se ve `Sesion`
-en lugar de `Sesion@4f2b`). Se usa cuando el objeto representa un **valor** —
-en la próxima sección aparecerá su uso estrella.
+en lugar de `Sesion@4f2b`). En la próxima sección aparecerá su uso estrella.
 
 ### 2.3. `sealed class`: las alternativas cerradas
 
-El tercer concepto es el más nuevo y el más importante del capítulo. Piensa en
-el resultado de un login: solo hay dos posibilidades — funcionó, o falló con un
-motivo. Una `sealed class` (clase **sellada**) permite decirle eso al
-compilador: "estas son TODAS las variantes que existen, no hay otras".
+El tercer concepto es el más importante del capítulo. Piensa en el resultado
+de un login: solo hay dos posibilidades — funcionó, o falló con un motivo. No
+hay una tercera. En JavaScript esto se modela a mano, con un campo `tipo`:
+
+```js
+{ tipo: "exito" }
+{ tipo: "error", mensaje: "Contraseña incorrecta" }
+```
+
+Funciona... pero nada impide escribir `tipo: "exitoo"` con un error de tipeo,
+ni olvidar manejar un caso. Una `sealed class` (clase **sellada**) permite
+declarar el conjunto completo de posibilidades como algo que el compilador
+**conoce**:
 
 ```kotlin
 sealed class ResultadoLogin {
@@ -145,44 +161,74 @@ sealed class ResultadoLogin {
 }
 ```
 
-Leámoslo por partes:
+Léelo con lo que ya sabes — todas las piezas son conocidas:
 
 - `sealed class ResultadoLogin` — declara la familia. "Sellada" significa que
-  **nadie fuera de este archivo puede agregar variantes**.
-- `data object Exito : ResultadoLogin()` — la variante éxito. Es un
-  `data object` porque no lleva datos: el éxito es uno solo, no necesita
-  instancias distintas.
-- `data class Error(val mensaje: String) : ResultadoLogin()` — la variante
-  error. Es una `data class` porque **sí** lleva datos: cada error tiene su
-  mensaje.
+  estas variantes son **todas**: nadie puede agregar otra desde afuera.
+- Cada variante **firma con `:`** que pertenece a la familia — el mismo `:` de
+  "es un" que viste con la interfaz. `Exito` es un `ResultadoLogin`; `Error`
+  es un `ResultadoLogin`.
+- Para cada variante, la regla de la sección anterior, refinada: **¿la
+  variante lleva datos que cambian?** Todos los éxitos son idénticos — no
+  llevan datos — así que alcanza con una única instancia: `data object`. Cada
+  error es distinto — lleva su mensaje — así que hay que fabricar instancias:
+  `data class`.
 
-La recompensa llega al consumir el valor con `when` (el pariente poderoso del
-`switch` de JavaScript, visto en el capítulo 02):
+#### La recompensa: `when` exhaustivo
+
+El conjunto cerrado se consume con `when` (el pariente del `switch` de
+JavaScript, visto en el capítulo 02):
 
 ```kotlin
-val resultado: ResultadoLogin = repositorio.login(usuario, contrasena)
-
 when (resultado) {
     is ResultadoLogin.Exito -> irAPantallaPrincipal()
     is ResultadoLogin.Error -> mostrarMensaje(resultado.mensaje)
 }
 ```
 
-Dos cosas notables:
+Ahora, la situación que muestra por qué esto vale la pena. Mañana la familia
+gana una variante nueva:
 
-- **`when` es exhaustivo**: como la familia está sellada, el compilador conoce
-  todas las variantes. Si mañana se agrega `data object SesionExpirada` y algún
-  `when` no la contempla, **ese código deja de compilar**. El compilador
-  encuentra el olvido antes que el usuario.
-- **Cast inteligente**: dentro de la rama `is ResultadoLogin.Error`, Kotlin ya
-  sabe que `resultado` es un `Error`, así que `resultado.mensaje` funciona sin
-  conversión manual.
+```kotlin
+    data object SesionExpirada : ResultadoLogin()
+```
 
-**El equivalente web**: en TypeScript esto se modela con una *discriminated
-union* (`{ tipo: "exito" } | { tipo: "error"; mensaje: string }`) y un `switch`
-sobre `tipo`. La `sealed class` es esa misma idea con soporte total del
-compilador. En JavaScript puro, el equivalente honesto es una cadena de `if`
-sobre un campo `tipo`... y ninguna ayuda si olvidas un caso.
+...y nadie se acuerda de tocar aquel `when`. ¿Qué pasa al compilar? **El
+proyecto deja de compilar.** Android Studio subraya el `when` en rojo:
+
+```text
+'when' expression must be exhaustive, add necessary 'is SesionExpirada' branch
+```
+
+Como la familia está sellada, el compilador tiene la lista completa: cuenta
+las ramas del `when`, ve que falta una, y se niega a continuar hasta que se
+maneje. En JavaScript, el `switch` con el caso olvidado corre feliz — y el día
+que llega el caso nuevo, la pantalla no hace nada o explota, en producción.
+
+El segundo regalo es el **cast inteligente**: dentro de la rama
+`is ResultadoLogin.Error`, Kotlin ya sabe que `resultado` es un `Error`, así
+que `resultado.mensaje` funciona directo, sin conversión manual.
+
+> 💡 **El patrón que se repite — y qué es "compilar"**
+>
+> JavaScript no tiene paso de compilación: el navegador lee el código y lo va
+> ejecutando; los errores aparecen en vivo, con la aplicación corriendo.
+> Kotlin primero **traduce todo el código** a algo que el teléfono entiende —
+> eso es compilar — y durante esa traducción **analiza todo**: tipos, nulls,
+> contratos, casos del `when`. Si algo no cierra, se niega a producir la
+> aplicación.
+>
+> Por eso el mismo patrón aparece una y otra vez:
+>
+> - Null safety → el null olvidado lo encuentra el compilador.
+> - Interfaz → el contrato incumplido lo encuentra el compilador.
+> - Sealed + `when` → el caso olvidado lo encuentra el compilador.
+>
+> Kotlin convierte errores **de ejecución** (los sufre el usuario) en errores
+> **de compilación** (los ves tú, antes de que la aplicación exista).
+>
+> Si conoces TypeScript: la `sealed class` es su *discriminated union* con
+> soporte total del compilador.
 
 > 💡 **Por qué importa tanto**: el patrón State/Intent del proyecto modela
 > **las acciones del usuario** como una `sealed class` — escribir en el campo
