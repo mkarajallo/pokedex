@@ -112,6 +112,13 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   archivos, +55/−2). IDE sin errores; test aún no ejecutado por Mario y build
   completo de Android Studio pendiente. Falta: `LoginScreen` + `PantallaLogin`,
   cablear `MainActivity`, probar login real; enseñar el test creado.
+  Tramo commiteado (lecciones 4-5, base `e5662d2`, 9 archivos, 473 líneas):
+  `review_due=true` (`slice_budget_reached`) → Mario otorgó consentimiento;
+  revisión nativa medium (lente reliability) APROBADA y confirmada (lineage
+  `review-34e4cf7d27335e61`, autoridad consumida). 6 hallazgos informativos,
+  todos trabajo futuro de tests (cubrir `CambioUsuario`/`CambioContrasena`,
+  fake que registre argumentos, prueba de `RepositorioSesionLocal`). La
+  frontera revisada avanza a `68d67a7`.
 - [ ] T6. Ejercicios resueltos por Mario integrados con soluciones + errores
   vistos en batalla; checkpoint final; capítulo marcado ✅ en roadmap.
 
