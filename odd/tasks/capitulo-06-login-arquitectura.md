@@ -96,6 +96,22 @@ capítulo 06; corrutinas/Flow completo se difiere al capítulo 08 (Retrofit).
   `PantallaLogin`, cablear en `MainActivity`, probar login real. Dos
   candidatos de workspace intermedios fueron omitidos por Mario (ejercicio a
   medio escribir) y expiraron por drift sin gastar consentimiento.
+  Avance 2026-09-22: Mario escribió `LoginViewModel` completo guiado pieza a
+  pieza (esqueleto `_state`/`state`, `onIntent` con `when`, constructor con
+  contrato `RepositorioSesion` + default `RepositorioSesionLocal`, rama
+  `Enviar` con `validar` y campo nuevo `sesionIniciada` en `LoginState`).
+  Andamios nuevos: mapa visual publicado (artifact "Mapa del Login Pokédex"),
+  regla "listas vs actores" + comanda/plato, bloques de código anotados con
+  flechas (formato endosado por Mario). Revisión RDD del workspace (consentida
+  por Mario, medium, lente reliability): 1 typo (`onInten`) corregido por
+  Mario; 1 CRITICAL sin test → se creó `LoginViewModelTest.kt` (primer test
+  unitario, fake del contrato); 2.º CRITICAL bug real (rama `else` no
+  reseteaba `sesionIniciada` → sesión fantasma) corregido + test reforzado
+  éxito→fracaso; validación dirigida OK, aprobada y confirmada (lineage
+  `review-9eaa1191457d1036`, autoridad consumida). Commit `4c55c0b` (3
+  archivos, +55/−2). IDE sin errores; test aún no ejecutado por Mario y build
+  completo de Android Studio pendiente. Falta: `LoginScreen` + `PantallaLogin`,
+  cablear `MainActivity`, probar login real; enseñar el test creado.
 - [ ] T6. Ejercicios resueltos por Mario integrados con soluciones + errores
   vistos en batalla; checkpoint final; capítulo marcado ✅ en roadmap.
 
